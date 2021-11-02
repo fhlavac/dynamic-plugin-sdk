@@ -1,11 +1,10 @@
 {
+  "name": "monorepo",
   "license": "Apache-2.0",
-  "private": true,
-  "scripts": {
-    "test": "echo 'Write some tests!'"
-  },
   "workspaces": [
     "packages/*"
   ],
-  "packageManager": "yarn@3.1.0"
+  "scripts": {
+    "test": "yarn workspaces foreach run test"
+  }
 }
