@@ -844,6 +844,7 @@ __metadata:
     "@types/react": ^17.0.43
     "@types/react-dom": ^17.0.14
     "@types/react-router": ^5.1.17
+    "@types/react-router-dom": ^5.3.3
     "@types/react-virtualized": ^9.21.21
     "@typescript-eslint/eslint-plugin": ^5.3.1
     "@typescript-eslint/parser": ^5.3.1
@@ -859,6 +860,7 @@ __metadata:
     eslint-plugin-promise: ^5.1.1
     eslint-plugin-react: ^7.27.0
     eslint-plugin-react-hooks: ^4.3.0
+    identity-obj-proxy: ^3.0.0
     jest: ^27.5.1
     lodash-es: ^4.17.21
     prettier: ^2.4.1
@@ -1657,7 +1659,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-router@npm:^5.1.17":
+"@types/react-router-dom@npm:^5.3.3":
+  version: 5.3.3
+  resolution: "@types/react-router-dom@npm:5.3.3"
+  dependencies:
+    "@types/history": ^4.7.11
+    "@types/react": "*"
+    "@types/react-router": "*"
+  checksum: 28c4ea48909803c414bf5a08502acbb8ba414669b4b43bb51297c05fe5addc4df0b8fd00e0a9d1e3535ec4073ef38aaafac2c4a2b95b787167d113bc059beff3
+  languageName: node
+  linkType: hard
+
+"@types/react-router@npm:*, @types/react-router@npm:^5.1.17":
   version: 5.1.18
   resolution: "@types/react-router@npm:5.1.18"
   dependencies:
@@ -4519,6 +4532,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"harmony-reflect@npm:^1.4.6":
+  version: 1.6.2
+  resolution: "harmony-reflect@npm:1.6.2"
+  checksum: 2e5bae414cd2bfae5476147f9935dc69ee9b9a413206994dcb94c5b3208d4555da3d4313aff6fd14bd9991c1e3ef69cdda5c8fac1eb1d7afc064925839339b8c
+  languageName: node
+  linkType: hard
+
 "has-bigints@npm:^1.0.1":
   version: 1.0.1
   resolution: "has-bigints@npm:1.0.1"
@@ -4775,6 +4795,15 @@ __metadata:
   peerDependencies:
     postcss: ^8.1.0
   checksum: 5c324d283552b1269cfc13a503aaaa172a280f914e5b81544f3803bc6f06a3b585fb79f66f7c771a2c052db7982c18bf92d001e3b47282e3abbbb4c4cc488d68
+  languageName: node
+  linkType: hard
+
+"identity-obj-proxy@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "identity-obj-proxy@npm:3.0.0"
+  dependencies:
+    harmony-reflect: ^1.4.6
+  checksum: 97559f8ea2aeaa1a880d279d8c49550dce01148321e00a2102cda5ddf9ce622fa1d7f3efc7bed63458af78889de888fdaebaf31c816312298bb3fdd0ef8aaf2c
   languageName: node
   linkType: hard
 

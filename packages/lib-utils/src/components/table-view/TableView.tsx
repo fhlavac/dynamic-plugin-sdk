@@ -1,3 +1,4 @@
+import type { AnyObject } from '@monorepo/common';
 import {
   SearchInput,
   Select,
@@ -9,7 +10,7 @@ import {
   ToolbarItemVariant,
 } from '@patternfly/react-core';
 import { FilterIcon } from '@patternfly/react-icons';
-import { omit } from 'lodash';
+import { isEmpty, omit } from 'lodash';
 import * as React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { parseFiltersFromURL, setFiltersToURL } from '../../utils/url-sync';
@@ -32,7 +33,26 @@ export type TableViewProps<D> = VirtualizedTableProps<D> & {
   filters?: FilterItem[];
 };
 
-const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
+export function filterDefault<D>(data: D[], filterValues: Record<string, string[]>): D[] {
+  return data.filter((item) => {
+    let isRelevant = true;
+    Object.keys(filterValues).forEach((key) => {
+      if (
+        filterValues[key].some(
+          (filterValue: string) =>
+            !((item as Record<string, unknown>)[key] as string)
+              ?.toLowerCase()
+              ?.includes(filterValue.toLowerCase()),
+        )
+      ) {
+        isRelevant = false;
+      }
+    });
+    return isRelevant;
+  });
+}
+
+const TableView = <D extends AnyObject>({
   columns,
   data,
   filters = [],
@@ -44,10 +64,9 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
   Row,
   CustomEmptyState,
   emptyStateDescription,
-  loadErrorDefaultText,
   CustomNoDataEmptyState,
   'aria-label': ariaLabel,
-}) => {
+}: TableViewProps<D>) => {
   const history = useHistory();
   const location = useLocation();
   const [activeFilter, setActiveFilter] = React.useState<FilterItem | undefined>(filters?.[0]);
@@ -60,26 +79,15 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
       new URLSearchParams(location.search),
       filters.map((filter) => filter.id),
     );
-    if (filters) {
+    if (filters && !isEmpty(filterValues.current)) {
       setFilteredData(
         onFilter
           ? onFilter(filterValues.current, activeFilter)
-          : [...data].filter((item) => {
-              let isRelevant = true;
-              Object.keys(filterValues.current).forEach((key) => {
-                if (
-                  filterValues.current[key].some(
-                    (filterValue) => !(item[key] as string)?.toLowerCase()?.includes(filterValue),
-                  )
-                ) {
-                  isRelevant = false;
-                }
-              });
-              return isRelevant;
-            }),
+          : filterDefault([...data], filterValues.current),
       );
     }
-  }, [location, activeFilter, data, filters, onFilter]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location]);
 
   return (
     <>
@@ -159,7 +167,6 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
         emptyStateDescription={emptyStateDescription}
         CustomEmptyState={CustomEmptyState}
         loadError={loadError}
-        loadErrorDefaultText={loadErrorDefaultText}
         CustomNoDataEmptyState={CustomNoDataEmptyState}
       />
     </>
