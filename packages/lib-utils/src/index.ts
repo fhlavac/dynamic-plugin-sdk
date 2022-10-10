@@ -13,7 +13,6 @@ export {
   HorizontalNavProps,
 } from './components/horizontal-nav';
 export { LabelList, LabelListProps } from './components/label-list';
-export { Td } from './components/table';
 export {
   WatchK8sResource,
   WatchK8sResources,

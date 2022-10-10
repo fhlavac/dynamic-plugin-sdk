@@ -2,11 +2,10 @@
 import type { AnyObject } from '@monorepo/common';
 import { Button, Tooltip } from '@patternfly/react-core';
 import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
-import { sortable } from '@patternfly/react-table';
+import { sortable, Td } from '@patternfly/react-table';
 import type { ComponentStory, ComponentMeta } from '@storybook/react';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { Td } from '../table/VirtualizedTableBody';
 import ListView from './ListView';
 
 export type TableItem = {
@@ -138,5 +137,4 @@ Primary.args = {
   onSelect: () => null,
   scrollNode: undefined,
   emptyStateDescription: 'No matching data found...',
-  virtualized: false,
 };

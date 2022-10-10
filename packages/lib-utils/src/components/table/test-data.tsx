@@ -1,22 +1,25 @@
 import { sortable, Td } from '@patternfly/react-table';
 import * as React from 'react';
 import type { FilterItem } from '../list-view/ListView';
-import type { RowProps, TableColumn } from './VirtualizedTableBody';
+import type { RowProps, TableColumn } from './VirtualizedTable';
 
 export const testData: TableTestItem[] = [
   {
+    id: 1,
     name: 'name-Y',
     prs: 'prs-Y',
     branches: 'branches-Y',
     workspaces: 3,
   },
   {
+    id: 2,
     name: 'name-Z',
     prs: 'prs-Z',
     branches: 'branches-Z',
     workspaces: 1,
   },
   {
+    id: 3,
     name: 'name-X',
     prs: 'prs-X',
     branches: 'branches-X',
@@ -63,6 +66,7 @@ export const testColumns: TableColumn[] = [
 ];
 
 export type TableTestItem = {
+  id: number;
   name: string;
   prs: string;
   branches: string;

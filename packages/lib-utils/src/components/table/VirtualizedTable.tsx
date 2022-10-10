@@ -1,15 +1,34 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { AnyObject } from '@monorepo/common';
-import type { IAction } from '@patternfly/react-table';
 import { ActionsColumn, Tbody, Td, Th, Thead, Tr, TableComposable } from '@patternfly/react-table';
-import { AutoSizer, WindowScroller } from '@patternfly/react-virtualized-extension';
+import type { IAction, ICell, SortByDirection, ThProps } from '@patternfly/react-table';
 import * as _ from 'lodash-es';
 import * as React from 'react';
-import type { Size, WindowScrollerChildProps } from 'react-virtualized';
 import type { LoadError } from '../status/StatusBox';
 import { StatusBox } from '../status/StatusBox';
-import type { RowProps, TableColumn } from './VirtualizedTableBody';
-import VirtualizedTableBody, { RowMemo } from './VirtualizedTableBody';
+
+export type RowProps<D = AnyObject> = {
+  /** Row data object. */
+  obj: D;
+  /** Row index */
+  index: number;
+};
+
+export type TableColumn<D = AnyObject> = ICell & {
+  /** Column ID. */
+  id: string;
+  /** Optional sort configuration. */
+  sort?: ((data: D[], sortDirection: SortByDirection) => D[]) | ThProps['sort'] | string;
+  /** Optional visibility. */
+  visibility?: string[];
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const RowMemo = React.memo(({ Row: RowComponent, obj, index }: RowMemoProps<any>) => (
+  <RowComponent obj={obj} index={index} />
+));
+
+export type RowMemoProps<D = AnyObject> = RowProps<D> & { Row: React.ComponentType<RowProps<D>> };
 
 export type VirtualizedTableProps<D = AnyObject> = {
   /** Optional flag indicating that filters are applied to data. */
@@ -42,8 +61,6 @@ export type VirtualizedTableProps<D = AnyObject> = {
   'aria-label'?: string;
   /** Optional scroll node. */
   scrollNode?: HTMLElement;
-  /** Optional virtualized table flag */
-  virtualized?: boolean;
 };
 
 const isHTMLElement = (n: Node): n is HTMLElement => {
@@ -109,8 +126,6 @@ const VirtualizedTable: React.FC<VirtualizedTableProps> = ({
   emptyStateDescription,
   onSelect,
   isRowSelected,
-  scrollNode,
-  virtualized,
   'aria-label': ariaLabel,
 }) => {
   const [activeSortDirection, setActiveSortDirection] = React.useState('none');
@@ -124,10 +139,7 @@ const VirtualizedTable: React.FC<VirtualizedTableProps> = ({
   const paginateData = (allData: AnyObject[]) => {
     const end =
       pagination?.offset && pagination?.limit ? pagination.offset + pagination.limit : undefined;
-    return allData.slice(
-      virtualized ? undefined : pagination?.offset,
-      virtualized ? undefined : end,
-    );
+    return allData.slice(pagination?.offset, end);
   };
 
   const sortData = (index = activeSortIndex, direction = activeSortDirection) => {
@@ -154,40 +166,6 @@ const VirtualizedTable: React.FC<VirtualizedTableProps> = ({
     const updatedRows = sortData(index, direction);
     setData(paginateData(updatedRows));
   };
-
-  const renderVirtualizedTable = (scrollContainer: (() => HTMLElement) | HTMLElement) => (
-    <WindowScroller
-      scrollElement={typeof scrollContainer === 'function' ? scrollContainer() : scrollContainer}
-    >
-      {({
-        height,
-        isScrolling,
-        registerChild,
-        onChildScroll,
-        scrollTop,
-      }: WindowScrollerChildProps) => (
-        <AutoSizer disableHeight>
-          {({ width }: Size) => (
-            <div ref={registerChild}>
-              <VirtualizedTableBody
-                rowActions={rowActions}
-                height={height}
-                isRowSelected={isRowSelected}
-                isScrolling={isScrolling}
-                onChildScroll={onChildScroll}
-                onSelect={onSelect}
-                Row={Row}
-                data={data}
-                columns={columns}
-                scrollTop={scrollTop}
-                width={width}
-              />
-            </div>
-          )}
-        </AutoSizer>
-      )}
-    </WindowScroller>
-  );
 
   return (
     <StatusBox
@@ -241,43 +219,29 @@ const VirtualizedTable: React.FC<VirtualizedTableProps> = ({
               {rowActions?.length > 0 && <Th />}
             </Tr>
           </Thead>
-          {(virtualized &&
-            (scrollNode ? (
-              renderVirtualizedTable(scrollNode)
-            ) : (
-              <WithScrollContainer>{renderVirtualizedTable}</WithScrollContainer>
-            ))) || (
-            <Tbody>
-              {data.map((item, index) => (
-                <Tr key={`row-${item.uuid}`}>
-                  {onSelect && (
-                    <Td
-                      select={{
-                        rowIndex: index,
-                        onSelect: (event, isSelected) => onSelect?.(event, isSelected, [item]),
-                        isSelected: isRowSelected?.(item) || false,
-                        disable: !!(item as Record<string, unknown>)?.disable,
-                      }}
-                      data-testid={`check-row-${index}`}
-                    />
-                  )}
-                  <RowMemo Row={Row} obj={item} index={index} />
-                  {rowActions && (
-                    <Td isActionCell>
-                      <ActionsColumn
-                        items={rowActions}
-                        rowData={item}
-                        extraData={{
-                          rowIndex: index,
-                          id: (item.id || item.uuid) as string,
-                        }}
-                      />
-                    </Td>
-                  )}
-                </Tr>
-              ))}
-            </Tbody>
-          )}
+          <Tbody>
+            {data.map((item, index) => (
+              <Tr key={`row-${item.uuid}`}>
+                {onSelect && (
+                  <Td
+                    select={{
+                      rowIndex: index,
+                      onSelect: (event, isSelected) => onSelect?.(event, isSelected, [item]),
+                      isSelected: isRowSelected?.(item) || false,
+                      disable: !!(item as Record<string, unknown>)?.disable,
+                    }}
+                    data-testid={`check-row-${index}`}
+                  />
+                )}
+                <RowMemo Row={Row} obj={item} index={index} />
+                {rowActions && (
+                  <Td isActionCell>
+                    <ActionsColumn items={rowActions} />
+                  </Td>
+                )}
+              </Tr>
+            ))}
+          </Tbody>
         </TableComposable>
       </div>
     </StatusBox>

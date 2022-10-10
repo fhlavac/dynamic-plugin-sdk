@@ -167,6 +167,7 @@ describe('TableView - non-virtualized', () => {
       longData = [
         ...longData,
         {
+          id: index,
           name: `name-${idx}`,
           prs: `prs-${idx}`,
           branches: `branches-${idx}`,

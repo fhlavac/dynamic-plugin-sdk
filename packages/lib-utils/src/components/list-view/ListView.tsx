@@ -60,7 +60,6 @@ const ListView: React.FC<ListViewProps> = ({
   loaded,
   rowActions,
   Row,
-  virtualized,
   CustomEmptyState,
   emptyStateDescription,
   CustomNoDataEmptyState,
@@ -119,9 +118,7 @@ const ListView: React.FC<ListViewProps> = ({
           ? { ...filterValues.current, [activeFilter.id]: [inputValue.current] }
           : omit(filterValues.current, activeFilter.id),
       );
-      if (!virtualized) {
-        setPagination({ ...pagination, offset: 0 });
-      }
+      setPagination({ ...pagination, offset: 0 });
     }
 
     setUseURL(true);
@@ -173,19 +170,17 @@ const ListView: React.FC<ListViewProps> = ({
               </ToolbarItem>
             </>
           )}
-          {!virtualized && (
-            <ToolbarItem className="dps-table-view-top-pagination">
-              <Pagination
-                itemCount={(filters ? filteredData : data).length}
-                perPage={pagination.limit}
-                page={calculatePage(pagination.limit, pagination.offset)}
-                onSetPage={(e, page) =>
-                  setPagination({ ...pagination, offset: calculateOffset(page, pagination.limit) })
-                }
-                onPerPageSelect={(e, value) => setPagination({ ...pagination, limit: value })}
-              />
-            </ToolbarItem>
-          )}
+          <ToolbarItem className="dps-table-view-top-pagination">
+            <Pagination
+              itemCount={(filters ? filteredData : data).length}
+              perPage={pagination.limit}
+              page={calculatePage(pagination.limit, pagination.offset)}
+              onSetPage={(e, page) =>
+                setPagination({ ...pagination, offset: calculateOffset(page, pagination.limit) })
+              }
+              onPerPageSelect={(e, value) => setPagination({ ...pagination, limit: value })}
+            />
+          </ToolbarItem>
         </ToolbarContent>
         {Object.keys(filterValues.current)?.length > 0 && (
           <ToolbarContent className="dps-list-view__filters">
@@ -203,9 +198,7 @@ const ListView: React.FC<ListViewProps> = ({
                   if (activeFilter?.id === key || !key) {
                     inputValue.current = '';
                   }
-                  if (!virtualized) {
-                    setPagination({ ...pagination, offset: 0 });
-                  }
+                  setPagination({ ...pagination, offset: 0 });
                 }}
               />
             </ToolbarItem>
@@ -223,24 +216,21 @@ const ListView: React.FC<ListViewProps> = ({
         rowActions={rowActions}
         pagination={pagination}
         Row={Row}
-        virtualized={virtualized}
         emptyStateDescription={emptyStateDescription}
         CustomEmptyState={CustomEmptyState}
         loadError={loadError}
         CustomNoDataEmptyState={CustomNoDataEmptyState}
       />
-      {!virtualized && (
-        <Pagination
-          variant={PaginationVariant.bottom}
-          itemCount={(filters ? filteredData : data).length}
-          perPage={pagination.limit}
-          page={calculatePage(pagination.limit, pagination.offset)}
-          onSetPage={(e, page) =>
-            setPagination({ ...pagination, offset: calculateOffset(page, pagination.limit) })
-          }
-          onPerPageSelect={(e, value) => setPagination({ ...pagination, limit: value })}
-        />
-      )}
+      <Pagination
+        variant={PaginationVariant.bottom}
+        itemCount={(filters ? filteredData : data).length}
+        perPage={pagination.limit}
+        page={calculatePage(pagination.limit, pagination.offset)}
+        onSetPage={(e, page) =>
+          setPagination({ ...pagination, offset: calculateOffset(page, pagination.limit) })
+        }
+        onPerPageSelect={(e, value) => setPagination({ ...pagination, limit: value })}
+      />
     </>
   );
 };
